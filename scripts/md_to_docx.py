@@ -45,8 +45,12 @@ def parse_inline(para, text):
         add_run_with_style(para, text[last:])
 
 
-def add_image(doc, img_path, caption_text, max_width_cm=14):
+def add_image(doc, img_path, caption_text, max_width_cm=None):
     from docx.shared import Cm
+    if max_width_cm is None:
+        section = doc.sections[0]
+        text_width_cm = (section.page_width - section.left_margin - section.right_margin) / 914400 * 2.54
+        max_width_cm = text_width_cm
     try:
         p = doc.add_paragraph()
         p.alignment = WD_ALIGN_PARAGRAPH.CENTER
@@ -228,12 +232,23 @@ def convert(md_path, out_path):
             i += 1
             continue
 
+        # Caption line (그림 N-N. / 표 N-N.)
+        if re.match(r'^(그림|표)\s+\d+-\d+\.', line.strip()):
+            p = doc.add_paragraph()
+            p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+            run = p.add_run(line.strip())
+            run.font.size = Pt(9)
+            run.italic = True
+            i += 1
+            continue
+
         # Normal paragraph
         para_lines = []
         while i < n and lines[i].strip() != '' and not lines[i].startswith('#') \
                 and not lines[i].startswith('>') and not lines[i].startswith('```') \
                 and not lines[i].startswith('|') and not re.match(r'^---+$', lines[i].strip()) \
-                and not lines[i].startswith('!'):
+                and not lines[i].startswith('!') \
+                and not re.match(r'^(그림|표)\s+\d+-\d+\.', lines[i].strip()):
             para_lines.append(lines[i].rstrip())
             i += 1
         text = ' '.join(para_lines)

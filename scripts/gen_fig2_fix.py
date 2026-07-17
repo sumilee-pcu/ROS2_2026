@@ -83,6 +83,55 @@ print('fig2-2.png done')
 
 
 # ──────────────────────────────────────────
+# fig2-3: workspace creation → build → source → run flow
+# ──────────────────────────────────────────
+fig, ax = plt.subplots(figsize=(12, 4.5))
+ax.set_xlim(0, 12)
+ax.set_ylim(0, 4.5)
+ax.axis('off')
+
+DARK = '#2C3E50'
+GRAY = '#555555'
+
+steps = [
+    (0.4,  '① 생성',   'mkdir -p',         '워크스페이스 폴더 생성'),
+    (3.4,  '② 빌드',   'colcon build',     'build/ install/ log/ 생성'),
+    (6.4,  '③ 소싱',   'source setup.bash','셸에 패키지 경로 등록'),
+    (9.4,  '④ 실행',   'ros2 run',         '내 패키지 노드 실행'),
+]
+
+box_w, box_h = 2.5, 2.8
+for bx, title, cmd, desc in steps:
+    # outer box
+    rect = patches.Rectangle((bx, 0.8), box_w, box_h,
+                               linewidth=1.8, edgecolor=DARK, facecolor='white')
+    ax.add_patch(rect)
+    # divider line
+    ax.plot([bx, bx + box_w], [0.8 + box_h * 0.62, 0.8 + box_h * 0.62],
+            color=DARK, lw=0.8)
+    # title
+    ax.text(bx + box_w / 2, 0.8 + box_h * 0.82, title,
+            ha='center', va='center', fontsize=12, fontweight='bold', color=DARK)
+    # command
+    ax.text(bx + box_w / 2, 0.8 + box_h * 0.44, cmd,
+            ha='center', va='center', fontsize=10, color='#1A5276')
+    # description
+    ax.text(bx + box_w / 2, 0.8 + box_h * 0.16, desc,
+            ha='center', va='center', fontsize=8.5, color=GRAY)
+
+# arrows between boxes
+for arrow_x in [2.9, 5.9, 8.9]:
+    ax.annotate('', xy=(arrow_x + 0.5, 0.8 + box_h / 2),
+                xytext=(arrow_x, 0.8 + box_h / 2),
+                arrowprops=dict(arrowstyle='->', color=DARK, lw=1.8))
+
+plt.savefig(f'{FIGURES}/fig2-3.png', dpi=150, bbox_inches='tight',
+            facecolor='white', pad_inches=0.15)
+plt.close()
+print('fig2-3.png done')
+
+
+# ──────────────────────────────────────────
 # fig2-4: workspace folder tree
 # ──────────────────────────────────────────
 fig, ax = plt.subplots(figsize=(10, 5.5))

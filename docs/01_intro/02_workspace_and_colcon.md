@@ -1,11 +1,19 @@
 # 2장. 워크스페이스와 패키지, 빌드 시스템
 
+:::opener
+• 워크스페이스 폴더 구조와 src/build/install/log의 역할
+• colcon과 ament의 역할 분리 및 빌드·소싱 흐름
+• Python·C++ 패키지 생성과 디렉터리 구조
+• 오버레이/언더레이 계층으로 내 코드가 인식되는 원리
+:::
+
 > **학습 목표**
-> - 워크스페이스(workspace)가 무엇이고 왜 필요한지 설명할 수 있다.
-> - colcon과 ament의 역할, 그리고 빌드와 소싱(sourcing)의 흐름을 이해한다.
-> - 내 손으로 워크스페이스를 만들고 colcon build 한다.
-> - Python 패키지(ament_python)와 C++ 패키지(ament_cmake)를 각각 생성하고 구조를 읽는다.
-> - 오버레이/언더레이(overlay/underlay) 개념으로 내 코드가 왜 인식되는가를 안다.
+>
+> 1. 워크스페이스(workspace)가 무엇이고 왜 필요한지 설명할 수 있다.
+> 2. colcon과 ament의 역할, 그리고 빌드와 소싱(sourcing)의 흐름을 설명할 수 있다.
+> 3. 내 손으로 워크스페이스를 만들고 colcon build 할 수 있다.
+> 4. Python 패키지(ament_python)와 C++ 패키지(ament_cmake)를 각각 생성하고 구조를 읽을 수 있다.
+> 5. 오버레이/언더레이(overlay/underlay) 개념으로 내 코드가 왜 인식되는지 설명할 수 있다.
 
 > **이번 장의 산출물**
 > - ~/ros2_ws 워크스페이스와 Python/C++ 예제 패키지를 만든다.
@@ -13,8 +21,7 @@
 >
 > **공통 학습 흐름**: 개념 → 따라하기 → 코드 해설 → 실행 확인 → 버전/환경 체크 → 트러블슈팅 → 연습문제 → 마무리 점검
 
-1장에서 ROS 2를 설치하고 talker/listener를 돌려 봤다. 그건 남이 만든 노드였다.
-이 장부터는 내 코드를 담을 그릇을 만든다. 그 그릇이 워크스페이스이고, 그릇 안의
+1장에서 ROS 2를 설치하고 talker/listener를 돌려 봤다. 그건 다른 사람이 만든 노드였다면 이 장부터는 내 코드가 담길 그릇을 만든다. 그 그릇이 워크스페이스이고, 그릇 안의
 부품 단위가 패키지다. 여기서 만든 워크스페이스를 2부 내내 계속 쓰게 된다.
 
 ---
@@ -38,7 +45,9 @@ mkdir -p ~/ros2_ws/src
 src 에 패키지를 넣고 워크스페이스 최상위에서 빌드하면, ROS 2는 자동으로 src 아래를
 훑어 패키지들을 찾아 빌드한다. 빌드 결과는 워크스페이스 안의 네 폴더에 나뉘어 생긴다.
 
-![그림 2-4. 워크스페이스 폴더 구조](figures/fig2-4.png)
+![](figures/fig2-4.png)
+
+그림 2-1. 워크스페이스 폴더 구조
 
 | 폴더 | 생성 시점 | 내용 |
 |---|---|---|
@@ -49,6 +58,15 @@ src 에 패키지를 넣고 워크스페이스 최상위에서 빌드하면, ROS
 
 > build, install, log 는 언제든 지우고 다시 빌드해도 된다. 버전 관리(git)에는
 > src 만 올리고 나머지 셋은 .gitignore 로 제외하는 것이 표준이다.
+> 클론한 사람은 자기 환경에서 colcon build 를 실행하면 install/ 이 새로 생성된다.
+
+워크스페이스 최상위(~/ros2_ws)에 아래 내용으로 .gitignore 를 만들면 된다.
+
+```
+build/
+install/
+log/
+```
 
 ---
 
@@ -67,7 +85,9 @@ ROS 1을 써 봤다면 catkin_make 를 기억할 것이다. ROS 2에서는 이�
 ament 는 패키지 내부를 구성하고 빌드하는 명세(API)고, colcon 은 이 ament 패키지들을
 전체적으로 모아서(Collection) 의존성 순서대로 빌드해 주는 빌드 도구(Build Tool)다.
 
-![그림 2-2. colcon과 ament의 역할 분리](figures/fig2-2.png)
+![](figures/fig2-2.png)
+
+그림 2-2. colcon과 ament의 역할 분리
 
 > **Foxy → Jazzy 차이**
 > 빌드 도구와 시스템의 큰 틀(colcon + ament)은 Foxy와 동일하다. 다만 Jazzy의 기반인
@@ -82,7 +102,9 @@ ament 는 패키지 내부를 구성하고 빌드하는 명세(API)고, colcon �
 직접 만들어 보자. 터미널을 연다. (1장에서 ~/.bashrc 에 source /opt/ros/jazzy/setup.bash 를
 넣었다고 가정한다)
 
-![그림 2-3. 워크스페이스 생성부터 노드 실행까지의 흐름](figures/fig2-3.png)
+![](figures/fig2-3.png)
+
+그림 2-3. 워크스페이스 생성부터 노드 실행까지의 흐름
 
 **① 워크스페이스 폴더와 src 만들기**
 
@@ -152,8 +174,9 @@ source ~/ros2_ws/install/setup.bash
 > ~/.bashrc 에 넣을 때는 반드시 절대 경로로 써야 한다.
 > ```bash
 > source ~/ros2_ws/install/setup.bash   # 올바름 (절대 경로)
-> source install/setup.bash             # 잘못됨 (상대 경로 — 터미널마다 실패)
+> source install/setup.bash             # ~/.bashrc 에서는 잘못됨 — 쉘 시작 시 현재 폴더가 ~ 이므로 실패
 > ```
+> ~/ros2_ws 안에서 직접 실행할 때는 상대 경로도 동작한다. 문제는 ~/.bashrc 에 넣는 경우뿐이다.
 
 ---
 
@@ -216,8 +239,10 @@ source ~/ros2_ws/install/setup.bash
 > ~/ros2_ws/install/setup.bash 는 그 위에 내가 만든 패키지를 얹는 것이다.
 > 자세한 내용은 2.7절에서 다룬다.
 
-> Python 코드는 수정할 때마다 다시 빌드하기 번거롭다. 심볼릭 링크 설치를 쓰면
-> .py 를 고칠 때 재빌드 없이 바로 반영된다. 입문 단계에서 특히 편하다.
+> Python 코드는 수정할 때마다 다시 빌드하기 번거롭다. 기본 빌드는 .py 파일을
+> install/ 폴더에 복사하지만, --symlink-install 을 쓰면 복사 대신 src/ 원본을
+> 가리키는 심볼릭 링크를 install/ 에 만든다. 원본을 고치면 즉시 반영되어
+> 재빌드가 필요 없다. C++ 은 어차피 컴파일이 필요하므로 이 옵션의 효과가 없다.
 > ```bash
 > colcon build --symlink-install
 > ```
@@ -312,7 +337,9 @@ colcon 은 이 의존성을 읽어 빌드 순서를 정한다. A가 B에 의존�
 
 소싱을 두 번 한다는 점이 처음엔 헷갈린다. 구조를 그림으로 보자.
 
-![그림 2-1. 언더레이와 오버레이의 계층 구조](figures/fig2-1.png)
+![](figures/fig2-1.png)
+
+그림 2-4. 언더레이와 오버레이의 계층 구조
 
 - **언더레이**: ROS 2 배포판 자체. 보통 ~/.bashrc 에서 자동 소싱(1장).
 - **오버레이**: 내 워크스페이스. 언더레이 위에 얹혀, 같은 이름이 있으면 오버레이가 우선.
@@ -423,7 +450,7 @@ ros2 pkg executables demo_py         # (아직 노드 없음 → 비어 있음, 
 |---|---|---|
 | --packages-select A B | A, B 패키지만 빌드 | 특정 패키지만 수정했을 때 |
 | --packages-up-to A | A와 A가 의존하는 것까지 | 의존 패키지가 바뀌었을 때 |
-| --symlink-install | 설치를 심볼릭 링크로 | Python 코드 수정 잦을 때 (재빌드 불필요) |
+| --symlink-install | .py 를 install/ 에 복사 대신 심볼릭 링크로 — 원본 수정 시 재빌드 불필요 (C++ 에는 효과 없음) | Python 코드 수정 잦을 때 |
 | --event-handlers console_direct+ | 빌드 로그 실시간 출력 | 빌드가 멈춘 듯할 때 원인 파악 |
 | rm -rf build install log | 캐시 초기화 | 빌드가 꼬였을 때 |
 

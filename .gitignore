@@ -7,6 +7,18 @@ build_tmp/
 
 # OS
 .DS_Store
+Thumbs.db
+
+# Claude Code 로컬 메모리
+.claude/
+
+# 설치 파일 (바이너리)
+*.msi
+
+# Python 캐시
+__pycache__/
+*.pyc
+*.pyo
 
 # ROS 2 워크스페이스 산출물(독자가 빌드 시 생성)
 build/
