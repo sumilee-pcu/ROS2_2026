@@ -54,7 +54,7 @@
   - `colcon` 빌드 · `ament` · 워크스페이스 오버레이
   - Python 패키지 vs C++ 패키지 생성
 
-### 2부. ROS 2 핵심 통신 (Python & C++)
+### 2부. ROS2 노드 통신과 실행 (Python & C++)
 - [3장. 토픽 — 발행/구독](docs/02_basics/03_topic.md) — 목표 26p
 - [4장. 서비스 — 요청/응답](docs/02_basics/04_service.md) — 목표 24p
 - [5장. 액션 — 목표/피드백/결과](docs/02_basics/05_action.md) — 목표 26p
